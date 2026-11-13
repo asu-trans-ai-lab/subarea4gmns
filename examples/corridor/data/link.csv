@@ -1,0 +1,10 @@
+link_id,from_node_id,to_node_id,link_type,length,lanes,capacity,free_speed,ref_volume
+1,1,2,arterial,0.6,2,3600,40,1070
+2,2,3,arterial,0.6,2,3600,40,1370
+3,3,4,arterial,0.5,2,3600,40,970
+11,101,1,connector,0.2,1,99999,30,1000
+12,102,2,connector,0.2,1,99999,30,300
+13,3,104,connector,0.2,1,99999,30,400
+14,4,103,connector,0.2,1,99999,30,970
+15,105,1,connector,0.1,1,99999,30,120
+16,1,105,connector,0.1,1,99999,30,50

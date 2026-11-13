@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>subarea4gmns Demo</title>
+<style>
+:root{
+  --bg:#F6F4EE; --panel:#FFFDF8; --ink:#15233B; --body:#3D4A5C; --muted:#5E6878; --line:#D9D3C4;
+  --navy:#1F3B63; --navy-bg:#E3EAF4; --rust:#A84A14; --rust-bg:#FBEBDD; --green:#1F6B4A; --green-bg:#D6E8DD;
+  --gold:#7A4A06; --gold-bg:#F4E4C8; --link:#8A94A3; --hot:#C2410C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A26; --panel:#1A2433; --ink:#EEF2F7; --body:#C9D3E0; --muted:#94A1B3; --line:#2E3B4F;
+    --navy:#8FB3E8; --navy-bg:#1E3050; --rust:#F0A56E; --rust-bg:#3A2618; --green:#7FCBA4; --green-bg:#173528;
+    --gold:#E8C27A; --gold-bg:#3A2E14; --link:#6B7890; --hot:#FB923C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A26; --panel:#1A2433; --ink:#EEF2F7; --body:#C9D3E0; --muted:#94A1B3; --line:#2E3B4F;
+  --navy:#8FB3E8; --navy-bg:#1E3050; --rust:#F0A56E; --rust-bg:#3A2618; --green:#7FCBA4; --green-bg:#173528;
+  --gold:#E8C27A; --gold-bg:#3A2E14; --link:#6B7890; --hot:#FB923C;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:30px;color:var(--ink);margin:0 0 6px}
+h2{font-size:22px;color:var(--ink);margin:40px 0 8px}
+h3{font-size:16px;color:var(--ink);margin:0 0 6px}
+p{margin:6px 0 10px}
+.lede{font-size:17px;color:var(--muted);max-width:820px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--rust)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+svg{width:100%;height:auto;display:block}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+button{font:inherit;font-size:14px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.primary{background:var(--navy);border-color:var(--navy);color:var(--panel)}
+button:disabled{opacity:.45;cursor:default}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--ink);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.status{min-height:48px;font-size:15px;color:var(--ink);background:var(--gold-bg);border-radius:8px;padding:10px 12px;margin-top:10px}
+.meter{height:12px;background:var(--line);border-radius:6px;overflow:hidden;margin:4px 0 2px}
+.meter>div{height:100%;background:var(--green);width:0;transition:width .4s}
+.small{font-size:13px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.step{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel)}
+.step b{color:var(--navy)}
+code,pre{font-family:Consolas,"Courier New",monospace;font-size:13px}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;margin-right:4px}
+.t-entry{background:var(--navy-bg);color:var(--navy)} .t-exit{background:var(--rust-bg);color:var(--rust)}
+.t-int{background:var(--green-bg);color:var(--green)} .t-both{background:var(--gold-bg);color:var(--gold)}
+.note{border-left:4px solid var(--gold);padding:6px 12px;background:var(--panel);border-radius:0 8px 8px 0}
+img.fig{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">subarea4gmns · demo</p>
+<h1>Building subarea demand from link volumes</h1>
+<p class="lede">A subarea cut from a reference model (an MPO model, or a network built from OpenStreetMap with synthetic demand) needs its own trip table: one whose assignment reproduces the reference link volumes inside the cut. Step through the volume-only rebuild on a small corridor, then see the package's examples.</p>
+
+<div class="steps" style="margin-top:18px">
+  <div class="step"><b>1 Boundary</b><br><span class="small">Every crossing of the cut becomes an entry or exit zone.</span></div>
+  <div class="step"><b>2 Balance</b><br><span class="small">Volume in equals volume out at every ordinary node.</span></div>
+  <div class="step"><b>3 Split into paths</b><br><span class="small">Peel entry-to-exit paths until no volume is left.</span></div>
+  <div class="step"><b>4 Check</b><br><span class="small">The movements reproduce every link volume.</span></div>
+</div>
+
+<h2>Step through a small corridor</h2>
+<div class="grid">
+  <div class="panel">
+    <svg id="net" viewBox="0 0 900 430" role="img" aria-label="Small corridor network with link volumes"></svg>
+    <p class="small">Link labels: reference PM volume. From step 3 on: volume still unassigned / reference volume; line width follows the unassigned volume.</p>
+    <div class="btns">
+      <button id="b1" class="primary">1 Boundary</button>
+      <button id="b2" disabled>2 Check balance</button>
+      <button id="b3" disabled>3 Peel next path</button>
+      <button id="b3all" disabled>Peel all</button>
+      <button id="b4" disabled>4 Check volumes</button>
+      <button id="reset">Reset</button>
+    </div>
+    <div class="status" id="status">Start with step 1. The numbers on the links are the reference PM volumes on the cut (vehicles).</div>
+  </div>
+  <div class="panel">
+    <h3>Volume still to assign</h3>
+    <div class="meter"><div id="meter"></div></div>
+    <p class="small" id="meterTxt">0 of 5,480 vehicle-links assigned</p>
+    <h3 style="margin-top:14px">Origin-destination table</h3>
+    <table id="odt"><thead><tr><th>From</th><th>To</th><th class="n">Vehicles</th></tr></thead><tbody></tbody></table>
+    <p class="small" id="odnote"></p>
+  </div>
+</div>
+
+<h2>Examples in the package</h2>
+<p>Subarea trip tables extracted from the reference model's paths, assigned on the subarea, and compared with the reference link volumes.</p>
+<div class="panel">
+<table>
+<thead><tr><th>Example</th><th>Reference model</th><th>Subarea</th><th class="n">VMT</th><th class="n">Link error (WAPE)</th></tr></thead>
+<tbody>
+<tr><td>Sioux Falls</td><td>24 nodes, 76 links, 360,600 trips</td><td>10 nodes, 18 zones</td><td class="n">+0.009%</td><td class="n">0.12%</td></tr>
+<tr><td>Chicago Sketch</td><td>933 nodes, 2,950 links, 1.14 million trips</td><td>98 nodes, 58 zones</td><td class="n">&minus;0.015%</td><td class="n">0.39%</td></tr>
+<tr><td>OpenStreetMap + grid2demand</td><td>ASU Tempe campus, 512 nodes, 55 zones</td><td>190 nodes, 39 zones</td><td class="n">&minus;0.02%</td><td class="n">0.21%</td></tr>
+<tr><td>Corridor (this page)</td><td>link volumes only</td><td>4 links, 5 zones</td><td class="n">exact</td><td class="n">0%</td></tr>
+</tbody></table>
+<p class="small">The volume-only rebuild shown above is exact on corridors. On a grid with alternative routes, link volumes do not fix the paths; use the path-based extraction there.</p>
+</div>
+
+<h2>The workflow</h2>
+<img class="fig" src="workflow.png" alt="Workflow: OpenStreetMap, a reference model or benchmark networks give the reference network and trip table; the reference model run gives link volumes; the subarea is cut; its trip table is extracted from paths or rebuilt from volumes; and it is checked against the reference.">
+
+<h2>Run it</h2>
+<pre>pip install git+https://github.com/asu-trans-ai-lab/subarea4gmns
+python examples/corridor/run_example.py                 # this page's corridor
+python examples/sioux_falls/run_example.py              # path-based extraction and check
+subarea4gmns rebuild &lt;subarea folder&gt; --out demand.csv</pre>
+<p class="note">Link volumes fix the through movements that share no link with another movement. Splits among movements that use the same links, such as trips to and from an internal zone at one access point, are one feasible choice rather than a unique answer. Results are reported at link and corridor level.</p>
+</main>
+
+<script>
+// ---------------- small corridor ----------------
+const N = {
+  E1:{x:60,y:200,kind:"entry",label:"E1"}, n1:{x:250,y:200,kind:"access",label:"a"},
+  n2:{x:430,y:200,kind:"node",label:"b"}, n3:{x:610,y:200,kind:"node",label:"c"},
+  n4:{x:760,y:200,kind:"node",label:"d"}, X1:{x:860,y:200,kind:"exit",label:"X1"},
+  E2:{x:430,y:50,kind:"entry",label:"E2"}, X2:{x:610,y:370,kind:"exit",label:"X2"},
+  Z:{x:250,y:360,kind:"zone",label:"Z"}
+};
+const L0 = [
+  ["E1","n1",1000],["n1","n2",1070],["E2","n2",300],["n2","n3",1370],
+  ["n3","X2",400],["n3","n4",970],["n4","X1",970]
+];
+const CONN = [["Z","n1"],["n1","Z"]];
+const TOTAL = L0.reduce((s,l)=>s+l[2],0);
+const ZONE = {E1:"E1",E2:"E2",X1:"X1",X2:"X2",n1:"Z"};
+let resid, step, od, highlight, moves, done;
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = v => Math.round(v).toLocaleString("en-US");
+
+function reset(){
+  resid = {}; L0.forEach(l => resid[l[0]+">"+l[1]] = l[2]);
+  step = 0; od = {}; highlight = []; moves = 0; done = false;
+  document.getElementById("b1").disabled = false;
+  ["b2","b3","b3all","b4"].forEach(id => document.getElementById(id).disabled = true);
+  setStatus("Start with step 1. The numbers on the links are the reference PM volumes on the cut (vehicles).");
+  draw(); table(); meter();
+}
+function setStatus(t){ document.getElementById("status").innerHTML = t; }
+
+function draw(){
+  const s = document.getElementById("net"); const ns = "http://www.w3.org/2000/svg";
+  s.innerHTML = "";
+  const mk = (tag, a) => { const e = document.createElementNS(ns, tag); for (const k in a) e.setAttribute(k, a[k]); s.appendChild(e); return e; };
+  const defs = mk("defs", {});
+  [["ar", css("--link")],["arh", css("--hot")],["arc", css("--green")]].forEach(([id,c]) => {
+    const m = document.createElementNS(ns,"marker"); m.setAttribute("id",id); m.setAttribute("viewBox","0 0 10 10");
+    m.setAttribute("refX","9"); m.setAttribute("refY","5"); m.setAttribute("markerUnits","userSpaceOnUse"); m.setAttribute("markerWidth","13"); m.setAttribute("markerHeight","13"); m.setAttribute("orient","auto");
+    const p = document.createElementNS(ns,"path"); p.setAttribute("d","M0,0 L10,5 L0,10 z"); p.setAttribute("fill",c); m.appendChild(p); defs.appendChild(m);
+  });
+  if (step >= 1){
+    mk("rect",{x:150,y:110,width:640,height:200,rx:14,fill:"none",stroke:css("--muted"),"stroke-dasharray":"6 6"});
+    mk("text",{x:160,y:130,fill:css("--muted"),"font-size":14}).textContent = "subarea cut";
+  }
+  // connectors: Z -> a on the left, a -> Z on the right, ending outside the circles
+  [[N.Z.x-14, N.Z.y-16, N.n1.x-14, N.n1.y+16], [N.n1.x+14, N.n1.y+16, N.Z.x+14, N.Z.y-16]].forEach(([x1,y1,x2,y2]) =>
+    mk("line",{x1,y1,x2,y2,stroke:css("--green"),"stroke-width":2,"stroke-dasharray":"5 4","marker-end":"url(#arc)"}));
+  L0.forEach(([a,b,v]) => {
+    const A=N[a],B=N[b], key=a+">"+b, hot = highlight.includes(key);
+    const dx=B.x-A.x, dy=B.y-A.y, len=Math.hypot(dx,dy), ux=dx/len, uy=dy/len;
+    const w = 2 + 10*resid[key]/1370;
+    mk("line",{x1:A.x+ux*20,y1:A.y+uy*20,x2:B.x-ux*22,y2:B.y-uy*22,stroke: hot? css("--hot"): css("--link"),
+      "stroke-width": Math.max(w,1.5), "stroke-opacity": resid[key] > 0.5 ? 1 : 0.35, "marker-end": hot? "url(#arh)":"url(#ar)"});
+    const mx=(A.x+B.x)/2 + (dy===0?0:16), my=(A.y+B.y)/2 + (dy===0?-14:0);
+    const t = mk("text",{x:mx,y:my,"text-anchor":"middle",fill: hot? css("--hot"): css("--ink"),"font-size":15,"font-weight":600});
+    t.textContent = step >= 3 ? fmt(resid[key]) + " / " + fmt(v) : fmt(v);
+  });
+  for (const k in N){
+    const n = N[k]; let fill = css("--panel"), stroke = css("--link"), r = 12;
+    if (step >= 1 && n.kind==="entry"){ fill = css("--navy-bg"); stroke = css("--navy"); r = 18; }
+    if (step >= 1 && n.kind==="exit"){ fill = css("--rust-bg"); stroke = css("--rust"); r = 18; }
+    if (n.kind==="zone"){ fill = css("--green-bg"); stroke = css("--green"); r = 18; }
+    if (n.kind==="access"){ fill = css("--panel"); stroke = css("--green"); r = 11; }
+    mk("circle",{cx:n.x,cy:n.y,r,fill,stroke,"stroke-width":2});
+    if (n.label) mk("text",{x:n.x,y:n.y+5,"text-anchor":"middle","font-size":13,"font-weight":700,fill:css("--ink")}).textContent = n.label;
+    if (step === 2 && n.kind==="node"){
+      mk("text",{x:n.x,y:n.y+34,"text-anchor":"middle","font-size":13,fill:css("--green")}).textContent = "in = out ✓";
+    }
+  }
+  mk("text",{x:262,y:398,"font-size":13,fill:css("--green")}).textContent = "internal zone Z, connector to access node a";
+}
+
+function table(){
+  const tb = document.querySelector("#odt tbody"); tb.innerHTML = "";
+  Object.entries(od).sort((a,b)=>b[1]-a[1]).forEach(([k,v]) => {
+    const [o,d] = k.split(">"); const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${tag(o)}</td><td>${tag(d)}</td><td class="n">${fmt(v)}</td>`; tb.appendChild(tr);
+  });
+  document.getElementById("odnote").textContent = Object.keys(od).length ?
+    `${moves} path${moves>1?"s":""} peeled, ${Object.keys(od).length} movements, ${fmt(Object.values(od).reduce((s,v)=>s+v,0))} vehicles.` : "";
+}
+function tag(z){ const c = z.startsWith("E")? "t-entry" : z.startsWith("X")? "t-exit" : "t-int"; return `<span class="tag ${c}">${z}</span>`; }
+function meter(){
+  const left = Object.values(resid).reduce((s,v)=>s+v,0);
+  document.getElementById("meter").style.width = (100*(TOTAL-left)/TOTAL) + "%";
+  document.getElementById("meterTxt").textContent = `${fmt(TOTAL-left)} of ${fmt(TOTAL)} vehicle-links assigned`;
+}
+
+// the same peeling rule as subarea4gmns.rebuild
+const SOURCES = ["E1","E2","n1"], SINKS = new Set(["X1","X2","n1"]);
+function bfs(src, must){
+  const prev = {[src]:null}, q=[src];
+  while (q.length){
+    const u = q.shift();
+    if (SINKS.has(u) && u !== src){
+      const seq=[]; let c=u; while (prev[c] !== null){ const [p,k]=prev[c]; seq.push(k); c=p; }
+      seq.reverse(); if (!must || seq.includes(must)) return seq;
+    }
+    L0.filter(l => l[0]===u).forEach(l => { const k=l[0]+">"+l[1]; if (resid[k] > 1e-6 && !(l[1] in prev)){ prev[l[1]]=[u,k]; q.push(l[1]); } });
+  }
+  return null;
+}
+function peel(){
+  const top = Object.entries(resid).sort((a,b)=>b[1]-a[1])[0];
+  if (top[1] <= 1e-6){ finish(); return false; }
+  let seq=null; for (const s of SOURCES){ seq = bfs(s, top[0]); if (seq) break; }
+  if (!seq) for (const s of SOURCES){ seq = bfs(s); if (seq) break; }
+  if (!seq){ finish(); return false; }
+  const f = Math.min(...seq.map(k=>resid[k])); seq.forEach(k => resid[k] -= f);
+  const o = ZONE[seq[0].split(">")[0]], d = ZONE[seq[seq.length-1].split(">")[1]];
+  od[o+">"+d] = (od[o+">"+d]||0) + f; moves++; highlight = seq;
+  const nodes = [seq[0].split(">")[0], ...seq.map(k=>k.split(">")[1])].map(n=>N[n].label||"·").join(" → ");
+  setStatus(`Busiest unassigned link: <b>${top[0].split(">").map(n=>N[n].label).join(" → ")}</b> (${fmt(top[1])}). Path ${nodes}; smallest unassigned volume on it is <b>${fmt(f)}</b>, so movement <b>${o} → ${d}</b> gets ${fmt(f)} vehicles, subtracted from every link on the path.`);
+  draw(); table(); meter();
+  if (Object.values(resid).every(v => v <= 1e-6)) finish();
+  return true;
+}
+function finish(){
+  if (done) return; done = true;
+  ["b3","b3all"].forEach(id => document.getElementById(id).disabled = true);
+  document.getElementById("b4").disabled = false;
+  setStatus(`No volume left on any link: ${moves} paths give ${Object.keys(od).length} movements. Note that zone Z shows a <b>net</b> 70 vehicles leaving. Trips into and out of Z through the same access node cannot be told apart from link volumes alone. Go to step 4.`);
+  highlight = []; draw();
+}
+
+document.getElementById("b1").onclick = () => {
+  step = 1; draw();
+  setStatus("Every link crossing the cut gives a <b>boundary zone</b>: <b>E1, E2</b> are entries (traffic only enters), <b>X1, X2</b> are exits. The internal zone <b>Z</b> reaches the network through access node <b>a</b>, which can both send and receive trips.");
+  document.getElementById("b1").disabled = true; document.getElementById("b2").disabled = false;
+};
+document.getElementById("b2").onclick = () => {
+  step = 2; draw();
+  setStatus("At each ordinary node, volume in equals volume out (1,070 + 300 = 1,370; 1,370 = 400 + 970). A node that does not balance is reported and the cut is fixed before going on.");
+  document.getElementById("b2").disabled = true; document.getElementById("b3").disabled = false; document.getElementById("b3all").disabled = false;
+};
+document.getElementById("b3").onclick = () => { step = 3; peel(); };
+document.getElementById("b3all").onclick = () => { step = 3; let g = 0; while (!done && g++ < 50) peel(); };
+document.getElementById("b4").onclick = () => {
+  const rows = L0.map(([a,b,v]) => `${N[a].label||"·"}→${N[b].label||"·"} ${fmt(v)}`).join(", ");
+  setStatus(`Loading each movement on its path reproduces every link volume exactly (${rows}). In the package, the table is then assigned to equilibrium and VMT, VHT and link volumes are compared with the reference.`);
+  document.getElementById("b4").disabled = true;
+};
+document.getElementById("reset").onclick = reset;
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+reset();
+
+</script>
+</body>
+</html>

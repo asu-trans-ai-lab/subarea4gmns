@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "subarea4gmns"
+version = "0.1.0"
+description = "Build a subarea network and trip table from a reference travel model, and check them, in GMNS format."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "ASU Transportation+AI Lab" }]
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.21", "scipy>=1.7"]
+keywords = ["GMNS", "traffic assignment", "subarea", "origin-destination", "OpenStreetMap", "travel demand model"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.optional-dependencies]
+osm = ["osm2gmns>=1.0", "grid2demand>=1.0"]
+test = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/asu-trans-ai-lab/subarea4gmns"
+GMNS = "https://github.com/zephyr-data-specs/GMNS"
+
+[project.scripts]
+subarea4gmns = "subarea4gmns.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

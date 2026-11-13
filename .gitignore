@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+examples/*/out/
+examples/openstreetmap/*.osm
+examples/chicago_sketch/data/
+examples/corridor/demand_rebuilt.csv
+_tapbench/
