@@ -9,7 +9,7 @@ description = "Build a subarea network and trip table from a reference travel mo
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "ASU Transportation+AI Lab" }]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["numpy>=1.21", "scipy>=1.7"]
 keywords = ["GMNS", "traffic assignment", "subarea", "origin-destination", "OpenStreetMap", "travel demand model"]
 classifiers = [

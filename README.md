@@ -4,7 +4,7 @@
 
 [![tests](https://github.com/asu-trans-ai-lab/subarea4gmns/actions/workflows/tests.yml/badge.svg)](https://github.com/asu-trans-ai-lab/subarea4gmns/actions/workflows/tests.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![python](https://img.shields.io/badge/python-3.9%2B-blue)
+![python](https://img.shields.io/badge/python-3.10%2B-blue)
 
 A corridor or district study usually starts from a larger model, such as an MPO model, a regional model, or a network built from OpenStreetMap with synthetic demand. The study needs a smaller network and its own trip table. That trip table is right only if it reproduces the larger model's traffic inside the study area.
 
@@ -26,7 +26,7 @@ pip install git+https://github.com/asu-trans-ai-lab/subarea4gmns
 pip install "subarea4gmns[osm] @ git+https://github.com/asu-trans-ai-lab/subarea4gmns"
 ```
 
-The only requirements are Python 3.9+, NumPy and SciPy. The OpenStreetMap example also uses [osm2gmns](https://github.com/asu-trans-ai-lab/OSM2GMNS) and [grid2demand](https://github.com/asu-trans-ai-lab/grid2demand).
+The only requirements are Python 3.10+, NumPy and SciPy. The OpenStreetMap example also uses [osm2gmns](https://github.com/asu-trans-ai-lab/OSM2GMNS) and [grid2demand](https://github.com/asu-trans-ai-lab/grid2demand).
 
 ## Quick start
 
